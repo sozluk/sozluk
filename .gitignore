@@ -1,5 +1,10 @@
-*.class
-*.log
+# Ignore all dotfiles...
+.*
+# except for .gitignore
+!.gitignore
+
+
+data/
 
 # sbt specific
 dist/*
@@ -9,5 +14,4 @@ src_managed/
 project/boot/
 project/plugins/project/
 
-# Scala-IDE specific
-.scala_dependencies
+*.sublime-*
