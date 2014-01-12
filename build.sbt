@@ -9,8 +9,7 @@ lazy val commonSettings = Seq(
     "-feature",
     "-language:postfixOps",
     "-language:implicitConversions",
-    "-language:existentials"),
-  testOptions in Test += Tests.Argument("showtimes", "true"))
+    "-language:existentials"))
 
 lazy val settings = (
   commonSettings
@@ -18,10 +17,13 @@ lazy val settings = (
   ++ org.scalastyle.sbt.ScalastylePlugin.Settings)
 
 lazy val restApi = project.in(file("rest-api"))
-  .dependsOn(wiktionaryParser)
-  .aggregate(wiktionaryParser)
+  .dependsOn(parser)
+  .aggregate(parser)
   .settings(settings: _*)
+  .settings(testOptions in Test += Tests.Argument("showtimes", "true"))
 
-lazy val wiktionaryParser = project.in(file("wiktionary-parser")).settings(settings: _*)
+lazy val parser = project.in(file("parser"))
+  .settings(settings: _*)
+  .settings(testOptions in Test += Tests.Argument("-oDS"))
 
 shellPrompt in ThisBuild := Common.prompt
