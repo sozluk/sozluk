@@ -16,13 +16,18 @@ lazy val settings = (
   ++ scalariformSettings
   ++ org.scalastyle.sbt.ScalastylePlugin.Settings)
 
-lazy val restApi = project.in(file("rest-api"))
-  .dependsOn(parser)
-  .aggregate(parser)
+lazy val api = project.in(file("api"))
+  .dependsOn(elastic, parser)
+  .aggregate(elastic, parser)
   .settings(settings: _*)
   .settings(testOptions in Test += Tests.Argument("showtimes", "true"))
 
 lazy val parser = project.in(file("parser"))
+  .settings(settings: _*)
+  .settings(testOptions in Test += Tests.Argument("-oDS"))
+
+lazy val elastic = project.in(file("elastic"))
+  .dependsOn(parser)
   .settings(settings: _*)
   .settings(testOptions in Test += Tests.Argument("-oDS"))
 

@@ -1,4 +1,4 @@
-name := "rest-api"
+name := "api"
 
 resolvers ++= Seq(
   "spray repo" at "http://repo.spray.io/"
@@ -11,7 +11,6 @@ libraryDependencies ++= {
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" %% "spray-json" % "1.2.5",
     "io.spray" % "spray-testkit" % sprayVersion,
-    "com.sksamuel.elastic4s" %% "elastic4s" % "0.90.9.0",
     "org.specs2" %% "specs2" % "2.2.3" % "test")
 }
 

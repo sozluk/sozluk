@@ -1,4 +1,4 @@
-package org.sozluk.restapi
+package org.sozluk.api
 
 import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest

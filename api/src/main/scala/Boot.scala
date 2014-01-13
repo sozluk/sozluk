@@ -14,13 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.sozluk.restapi
+package org.sozluk.api
 
-import com.sksamuel.elastic4s.ElasticClient
-import com.sksamuel.elastic4s.ElasticDsl._
+import akka.actor.{ ActorSystem, Props }
+import akka.io.IO
+import spray.can.Http
 
-object Elasticsearch {
+object Boot extends App {
 
-  val client = ElasticClient.local
+  implicit val system = ActorSystem("sozluk-system")
 
+  val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
+
+  IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
+
+  org.sozluk.elastic.Elastic.client
 }

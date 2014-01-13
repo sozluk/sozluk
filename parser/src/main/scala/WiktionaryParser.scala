@@ -80,14 +80,14 @@ trait WiktionaryParser {
     printer.toString
   }
 
-  def parse: Iterator[(String, Seq[String])] = {
+  def parse: Iterator[(String, Array[String])] = {
     words map {
       case (word, content) =>
         val doc = Jsoup.parse(content)
         val dds = doc.select("dd").asScala
         (word, dds.collect {
           case ExtractText(text) => text
-        })
+        } toArray)
     }
   }
 }

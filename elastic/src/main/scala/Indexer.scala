@@ -14,30 +14,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.sozluk.restapi
+package org.sozluk.elastic
 
-import akka.actor.{ ActorSystem, Props }
-import akka.io.IO
-import spray.can.Http
-import com.sksamuel.elastic4s.mapping.FieldType._
+import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.StopAnalyzer
+import com.sksamuel.elastic4s.mapping.FieldType.StringType
 
-object Boot extends App {
+trait Indexer { self: Elastic =>
 
-  implicit val system = ActorSystem("sozluk-system")
+  type Key = String
 
-  val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
+  type Value = Array[String]
 
-  IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
+  type KeyValue = (Key, Value)
 
-  Elasticsearch.client.execute {
-    create index "places" mappings (
-      "cities" as (
-        id typed IntegerType,
-        "name" typed StringType boost 4,
-        "content" typed StringType analyzer StopAnalyzer
+  def createMappings: Unit =
+    client.execute {
+      create index "ws" mappings (
+        "w" as (
+          "k" typed StringType boost 4,
+          "v" typed StringType analyzer StopAnalyzer
+        )
       )
+    }
+
+  private[this] def _indexOne(key: Key, value: Value) =
+    index into "ws/w" id key fields (
+      "k" -> key,
+      "v" -> value
     )
-  }
+
+  def indexOne(key: Key, value: Value): Unit =
+    client.execute {
+      _indexOne(key, value)
+    }
+
+  def indexBulk(items: Seq[KeyValue]): Unit =
+    client.bulk {
+      items.map(item => _indexOne(item._1, item._2)): _*
+    }
+
 }
