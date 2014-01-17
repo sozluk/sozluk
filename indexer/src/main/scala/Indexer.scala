@@ -19,9 +19,9 @@ package org.sozluk.elastic
 import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.StopAnalyzer
-import com.sksamuel.elastic4s.mapping.FieldType.StringType
+import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
 
-trait Indexer { self: Elastic =>
+trait Indexer {
 
   type Key = String
 
@@ -29,12 +29,15 @@ trait Indexer { self: Elastic =>
 
   type KeyValue = (Key, Value)
 
-  def createMappings: Unit =
+  def client: ElasticClient
+
+  def createMappings(): Unit =
     client.execute {
       create index "ws" mappings (
         "w" as (
           "k" typed StringType boost 4,
-          "v" typed StringType analyzer StopAnalyzer
+          "v" typed StringType index "analyzed" analyzer "turkish",
+          "a" typed CompletionType
         )
       )
     }
@@ -42,7 +45,8 @@ trait Indexer { self: Elastic =>
   private[this] def _indexOne(key: Key, value: Value) =
     index into "ws/w" id key fields (
       "k" -> key,
-      "v" -> value
+      "v" -> value,
+      "a" -> key
     )
 
   def indexOne(key: Key, value: Value): Unit =

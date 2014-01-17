@@ -17,8 +17,6 @@ lazy val settings = (
   ++ org.scalastyle.sbt.ScalastylePlugin.Settings)
 
 lazy val api = project.in(file("api"))
-  .dependsOn(elastic, parser)
-  .aggregate(elastic, parser)
   .settings(settings: _*)
   .settings(testOptions in Test += Tests.Argument("showtimes", "true"))
 
@@ -26,8 +24,9 @@ lazy val parser = project.in(file("parser"))
   .settings(settings: _*)
   .settings(testOptions in Test += Tests.Argument("-oDS"))
 
-lazy val elastic = project.in(file("elastic"))
+lazy val indexer = project.in(file("indexer"))
   .dependsOn(parser)
+  .aggregate(parser)
   .settings(settings: _*)
   .settings(testOptions in Test += Tests.Argument("-oDS"))
 

@@ -18,37 +18,28 @@ package org.sozluk.elastic
 
 import org.sozluk.parser.WiktionaryParser
 import com.sksamuel.elastic4s.ElasticClient
-import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mapping.FieldType._
-import com.sksamuel.elastic4s.StopAnalyzer
 import java.io.{ Reader, FileReader }
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-trait Elastic {
+object IndexerApp extends Indexer {
 
-  def client: ElasticClient
+  val client = ElasticClient.remote("localhost", 9300)
 
-  def shutdown: Unit
-}
-
-object Elastic extends Elastic with Indexer {
-
-  val client = ElasticClient.local
-
-  def shutdown = Await.result(client.shutdown, 10 seconds)
-}
-
-object App {
+  def shutdown() = Await.result(client.shutdown, 10 seconds)
 
   def main(args: Array[String]) {
+    createMappings()
+    println("created mappings")
+
     new WiktionaryParser {
       def xmlSrc: Reader = new FileReader(args(0))
-    }.parse take (1000) grouped 100 foreach { items =>
+    }.parse grouped 100 foreach { items =>
       println("indexing...")
-      Elastic.indexBulk(items)
+      indexBulk(items)
     }
+
     println("Shutting down")
-    Elastic.shutdown
+    shutdown()
   }
 }

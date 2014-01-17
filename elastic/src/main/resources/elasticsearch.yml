@@ -1,6 +1,0 @@
-cluster:
-  name: sozluk
-
-path:
-  logs: "${HOME}/sozluk/es/logs"
-  data: "${HOME}/sozluk/es/data"

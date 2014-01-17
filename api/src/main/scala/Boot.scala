@@ -28,5 +28,8 @@ object Boot extends App {
 
   IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
 
-  org.sozluk.elastic.Elastic.client
+  import com.sksamuel.elastic4s.ElasticClient
+  import org.elasticsearch.node.NodeBuilder._
+  val node = nodeBuilder().node()
+  val client = ElasticClient.fromNode(node)
 }

@@ -1,0 +1,6 @@
+cluster:
+  name: sozluk
+
+node:
+  master: false
+  data: false
