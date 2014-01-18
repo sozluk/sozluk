@@ -20,6 +20,7 @@ import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.StopAnalyzer
 import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
+import org.sozluk.common.SozlukSettings._
 
 trait Indexer {
 
@@ -33,20 +34,20 @@ trait Indexer {
 
   def createMappings(): Unit =
     client.execute {
-      create index "ws" mappings (
-        "w" as (
-          "k" typed StringType boost 4,
-          "v" typed StringType index "analyzed" analyzer "turkish",
-          "a" typed CompletionType
+      create index indexNameWords mappings (
+        indexTypeWord as (
+          fieldNameKey typed StringType boost 4,
+          fieldNameValue typed StringType index "analyzed" analyzer "turkish",
+          fieldNameAutoComplete typed CompletionType
         )
       )
     }
 
   private[this] def _indexOne(key: Key, value: Value) =
-    index into "ws/w" id key fields (
-      "k" -> key,
-      "v" -> value,
-      "a" -> key
+    index into s"${indexNameWords}/${indexTypeWord}" id key fields (
+      fieldNameKey -> key,
+      fieldNameValue -> value,
+      fieldNameAutoComplete -> key
     )
 
   def indexOne(key: Key, value: Value): Unit =

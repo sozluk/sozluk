@@ -21,8 +21,9 @@ import com.sksamuel.elastic4s.ElasticClient
 import java.io.{ Reader, FileReader }
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import com.typesafe.scalalogging.slf4j.Logging
 
-object IndexerApp extends Indexer {
+object IndexerApp extends Indexer with Logging {
 
   val client = ElasticClient.remote("localhost", 9300)
 
@@ -30,16 +31,16 @@ object IndexerApp extends Indexer {
 
   def main(args: Array[String]) {
     createMappings()
-    println("created mappings")
+    logger.info("created mappings")
 
     new WiktionaryParser {
       def xmlSrc: Reader = new FileReader(args(0))
     }.parse grouped 100 foreach { items =>
-      println("indexing...")
+      logger.info("indexing...")
       indexBulk(items)
     }
 
-    println("Shutting down")
+    logger.info("Shutting down")
     shutdown()
   }
 }

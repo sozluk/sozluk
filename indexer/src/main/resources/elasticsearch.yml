@@ -4,3 +4,7 @@ cluster:
 node:
   master: false
   data: false
+
+path:
+  logs: "/tmp/sozluk/es/logs"
+  data: "/tmp/sozluk/es/data"

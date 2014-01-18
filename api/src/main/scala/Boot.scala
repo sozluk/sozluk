@@ -19,6 +19,7 @@ package org.sozluk.api
 import akka.actor.{ ActorSystem, Props }
 import akka.io.IO
 import spray.can.Http
+import org.sozluk.common.SozlukSettings._
 
 object Boot extends App {
 
@@ -26,7 +27,7 @@ object Boot extends App {
 
   val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
 
-  IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
+  IO(Http) ! Http.Bind(service, interface = "localhost", port = httpPort)
 
   import com.sksamuel.elastic4s.ElasticClient
   import org.elasticsearch.node.NodeBuilder._
