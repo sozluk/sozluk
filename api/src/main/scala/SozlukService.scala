@@ -16,6 +16,7 @@
 
 package org.sozluk.api
 
+import scala.concurrent.ExecutionContext
 import akka.actor.Actor
 import spray.routing._
 import spray.http._
@@ -23,6 +24,7 @@ import MediaTypes._
 import spray.json.DefaultJsonProtocol
 import spray.httpx.unmarshalling._
 import spray.httpx.marshalling._
+import org.sozluk.common.SozlukSettings._
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -31,6 +33,8 @@ class SozlukServiceActor extends Actor with SozlukService {
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
   def actorRefFactory = context
+
+  implicit def ec: ExecutionContext = context.dispatcher
 
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
@@ -41,21 +45,32 @@ class SozlukServiceActor extends Actor with SozlukService {
 // this trait defines our service behavior independently from the service actor
 trait SozlukService extends HttpService {
 
-  case class Word(name: String)
+  import com.sksamuel.elastic4s.ElasticDsl._
+  import com.sksamuel.elastic4s.ElasticClient
+  import com.sksamuel.elastic4s.SuggestMode._
+  import org.elasticsearch.node.NodeBuilder._
+  import spray.http.HttpHeaders._
 
-  object MyJsonProtocol extends DefaultJsonProtocol {
-    implicit val WordFormat = jsonFormat1(Word)
-  }
+  implicit def ec: ExecutionContext
 
-  import MyJsonProtocol._
-  import spray.httpx.SprayJsonSupport._
+  val node = nodeBuilder().node()
+  val client = ElasticClient.fromNode(node)
+
+  def respondWithCORSHeaders(origin: String) =
+    respondWithHeaders(`Access-Control-Allow-Origin`(AllOrigins))
 
   val myRoute =
-    pathPrefix("kelimeler" / Segment) { kelime =>
-      get {
-        respondWithMediaType(`application/json`) {
-          complete {
-            Word(kelime)
+    path("ks") {
+      parameter('q.as[String]) { q =>
+        get {
+          respondWithMediaType(`application/json`) {
+            respondWithCORSHeaders("*") {
+              complete {
+                client execute {
+                  search in indexNameWords types indexTypeWord query termQuery(fieldNameKey, q)
+                } map (_.toString)
+              }
+            }
           }
         }
       }

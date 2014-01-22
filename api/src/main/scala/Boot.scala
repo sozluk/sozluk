@@ -28,9 +28,4 @@ object Boot extends App {
   val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
 
   IO(Http) ! Http.Bind(service, interface = "localhost", port = httpPort)
-
-  import com.sksamuel.elastic4s.ElasticClient
-  import org.elasticsearch.node.NodeBuilder._
-  val node = nodeBuilder().node()
-  val client = ElasticClient.fromNode(node)
 }
