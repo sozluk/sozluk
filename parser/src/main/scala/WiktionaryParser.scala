@@ -87,7 +87,7 @@ trait WiktionaryParser {
         val dds = doc.select("dd").asScala
         (word, dds.collect {
           case ExtractText(text) => text
-        } toArray)
-    }
+        }.filter(!_.equalsIgnoreCase(word)).distinct.toArray)
+    } filter { case (word, meanings) => meanings.nonEmpty }
   }
 }
