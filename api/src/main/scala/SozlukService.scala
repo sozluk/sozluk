@@ -67,7 +67,7 @@ trait SozlukService extends HttpService {
             respondWithCORSHeaders("*") {
               complete {
                 client execute {
-                  search in indexNameWords types indexTypeWord query termQuery(fieldNameKey, q)
+                  search in indexNameWords types indexTypeWord query matchPhrase(fieldNameKey, q)
                 } map (_.toString)
               }
             }

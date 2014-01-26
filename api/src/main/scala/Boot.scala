@@ -27,5 +27,5 @@ object Boot extends App {
 
   val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
 
-  IO(Http) ! Http.Bind(service, interface = "localhost", port = httpPort)
+  IO(Http) ! Http.Bind(service, interface = "0.0.0.0", port = httpPort)
 }

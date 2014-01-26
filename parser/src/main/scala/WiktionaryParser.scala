@@ -37,7 +37,7 @@ trait WiktionaryParser {
   val textPath = NoNamespaceQName("text")
 
   object FindWord {
-    val wordPattern = "[\\wıöçşğüIÖÇŞĞÜ]+"
+    val wordPattern = "[\\wıöçşğüIÖÇŞĞÜ ]+"
 
     def unapply(page: XmlPath): Option[String] = {
       val word = text(page \* titlePath)
