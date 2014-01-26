@@ -1,3 +1,5 @@
+import AssemblyKeys._
+
 lazy val commonSettings = Seq(
   organization := "org.sozluk",
   version := "1.0-SNAPSHOT",
@@ -14,24 +16,29 @@ lazy val commonSettings = Seq(
 lazy val settings = (
   commonSettings
   ++ scalariformSettings
-  ++ org.scalastyle.sbt.ScalastylePlugin.Settings)
+  ++ org.scalastyle.sbt.ScalastylePlugin.Settings
+  ++ assemblySettings)
 
 lazy val api = project.in(file("api"))
   .dependsOn(common)
   .settings(settings: _*)
+  .settings(test in assembly := {})
   .settings(testOptions in Test += Tests.Argument("showtimes", "true"))
 
 lazy val parser = project.in(file("parser"))
   .settings(settings: _*)
+  .settings(test in assembly := {})
   .settings(testOptions in Test += Tests.Argument("-oDS"))
 
 lazy val indexer = project.in(file("indexer"))
   .dependsOn(parser, common)
   .aggregate(parser, common)
   .settings(settings: _*)
+  .settings(test in assembly := {})
   .settings(testOptions in Test += Tests.Argument("-oDS"))
 
 lazy val common = project.in(file("common"))
   .settings(settings: _*)
+  .settings(test in assembly := {})
 
 shellPrompt in ThisBuild := Common.prompt

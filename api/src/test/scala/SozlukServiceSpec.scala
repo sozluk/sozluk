@@ -11,6 +11,7 @@ import com.sksamuel.elastic4s.StopAnalyzer
 
 class SozlukServiceSpec extends Specification with Specs2RouteTest with SozlukService {
   def actorRefFactory = system
+  def ec = system.dispatcher
 
   "SozlukService" should {
 
