@@ -8,3 +8,11 @@ node:
 path:
   logs: "/tmp/sozluk/es/logs"
   data: "/tmp/sozluk/es/data"
+
+index:
+  analysis:
+    analyzer:
+      word_analyzer:
+        type: custom
+        tokenizer: lowercase
+        filter: [asciifolding]

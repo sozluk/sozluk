@@ -36,7 +36,7 @@ trait Indexer {
     client.execute {
       create index indexNameWords mappings (
         indexTypeWord as (
-          fieldNameKey typed StringType boost 4,
+          fieldNameKey typed StringType analyzer "word_analyzer",
           fieldNameValue typed StringType index "analyzed" analyzer "turkish",
           fieldNameAutoComplete typed CompletionType
         )

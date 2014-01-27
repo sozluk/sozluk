@@ -9,7 +9,21 @@ path:
   logs: "${HOME}/sozluk/es/logs"
   data: "${HOME}/sozluk/es/data"
 
-network.bind_host: 127.0.0.1
-network.publish_host: 127.0.0.1
+index:
+  analysis:
+    analyzer:
+      word_analyzer:
+        type: custom
+        tokenizer: lowercase
+        filter: [asciifolding]
+
+
+network:
+  bind_host: 127.0.0.1
+  publish_host: 127.0.0.1
+
 transport.tcp.port: 9300
 http.port: 9200
+
+bootstrap:
+  mlockall: true
