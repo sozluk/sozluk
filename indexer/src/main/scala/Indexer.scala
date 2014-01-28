@@ -40,7 +40,7 @@ trait Indexer {
           fieldNameValue typed StringType index "analyzed" analyzer "turkish",
           fieldNameAutoComplete typed CompletionType
         )
-      )
+      ) shards 1 replicas 1
     }
 
   private[this] def _indexOne(key: Key, value: Value) =
