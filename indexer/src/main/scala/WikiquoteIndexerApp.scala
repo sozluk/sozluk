@@ -14,33 +14,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.sozluk.elastic
+package org.sozluk.indexer
 
-import org.sozluk.parser.WiktionaryParser
+import org.sozluk.parser.WikiquoteParser
 import com.sksamuel.elastic4s.ElasticClient
 import java.io.{ Reader, FileReader }
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.typesafe.scalalogging.slf4j.Logging
 
-object IndexerApp extends Indexer with Logging {
+object WikiquoteIndexerApp extends WikiquoteIndexer with Logging {
 
   val client = ElasticClient.remote("localhost", 9300)
-
-  def shutdown() = Await.result(client.shutdown, 10 seconds)
 
   def main(args: Array[String]) {
     createMappings()
     logger.info("created mappings")
 
-    new WiktionaryParser {
+    new WikiquoteParser {
       def xmlSrc: Reader = new FileReader(args(0))
-    }.parse grouped 100 foreach { items =>
-      logger.info("indexing...")
-      indexBulk(items)
+    }.parse grouped 100 foreach {
+      _ foreach {
+        case (person, quotes) =>
+          logger.info("indexing...")
+          Await.result(indexBulk(quotes.map((person, _))), Duration.Inf)
+      }
     }
-
-    logger.info("Shutting down")
-    shutdown()
   }
 }

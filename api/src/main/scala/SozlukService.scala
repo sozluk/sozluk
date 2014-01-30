@@ -21,9 +21,6 @@ import akka.actor.Actor
 import spray.routing._
 import spray.http._
 import MediaTypes._
-import spray.json.DefaultJsonProtocol
-import spray.httpx.unmarshalling._
-import spray.httpx.marshalling._
 import org.sozluk.common.SozlukSettings._
 
 // we don't implement our route structure directly in the service actor because
@@ -56,15 +53,14 @@ trait SozlukService extends HttpService {
   val node = nodeBuilder().node()
   val client = ElasticClient.fromNode(node)
 
-  def respondWithCORSHeaders(origin: String) =
-    respondWithHeaders(`Access-Control-Allow-Origin`(AllOrigins))
+  def respondWithCORSHeaders = respondWithHeaders(`Access-Control-Allow-Origin`(AllOrigins))
 
   val myRoute =
     path("ks") {
       parameter('q.as[String]) { q =>
         get {
           respondWithMediaType(`application/json`) {
-            respondWithCORSHeaders("*") {
+            respondWithCORSHeaders {
               complete {
                 client execute {
                   search in indexNameWords types indexTypeWord query matchPhrase(fieldNameKey, q)
@@ -74,12 +70,25 @@ trait SozlukService extends HttpService {
           }
         }
       }
-    } ~
-      path("ping") {
+    } ~ path("qts") {
+      parameter('q.as[String]) { q =>
         get {
-          complete {
-            "pong"
+          respondWithMediaType(`application/json`) {
+            respondWithCORSHeaders {
+              complete {
+                client execute {
+                  search in indexNameQuotes types indexTypeQuote query matches(fieldNameValue, q)
+                } map (_.toString)
+              }
+            }
           }
         }
       }
+    } ~ path("ping") {
+      get {
+        complete {
+          "pong"
+        }
+      }
+    }
 }

@@ -16,33 +16,33 @@
 
 package org.sozluk.indexer
 
+import org.sozluk.parser.WiktionaryParser
 import com.sksamuel.elastic4s.ElasticClient
-import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
-import org.sozluk.common.SozlukSettings._
+import java.io.{ Reader, FileReader }
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import com.typesafe.scalalogging.slf4j.Logging
 
-trait Indexer {
+object WiktionaryIndexerApp extends WiktionaryIndexer with Logging {
 
-  type Key
+  val client = ElasticClient.remote("localhost", 9300)
 
-  type Value
+  def shutdown() = Await.result(client.shutdown, 10 seconds)
 
-  type KeyValue = (Key, Value)
+  def main(args: Array[String]) {
+    createMappings()
+    logger.info("created mappings")
 
-  def client: ElasticClient
-
-  def createMappings(): Unit
-
-  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition
-
-  def indexOne(key: Key, value: Value) =
-    client.execute {
-      _indexOne(key, value)
+    new WiktionaryParser {
+      val ignoredPages = Set.empty[String]
+      val forbiddenWords = Set.empty[String]
+      def xmlSrc: Reader = new FileReader(args(0))
+    }.parse grouped 100 foreach { items =>
+      logger.info("indexing...")
+      indexBulk(items)
     }
 
-  def indexBulk(items: Seq[KeyValue]) =
-    client.bulk {
-      items.map(item => _indexOne(item._1, item._2)): _*
-    }
-
+    logger.info("Shutting down")
+    shutdown()
+  }
 }

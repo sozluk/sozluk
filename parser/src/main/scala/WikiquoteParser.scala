@@ -29,30 +29,30 @@ import org.jsoup.nodes.{ Element, Document }
 
 import java.io.{ Reader, StringReader, FileReader }
 
-trait WiktionaryParser extends WikiParser {
+trait WikiquoteParser extends WikiParser {
 
-  object ExtractText {
-    val ddPattern = "\\d+\\s*.+"
+  val ignoredPages = Set(
+    "Main Page",
+    "Konular listesi",
+    "Filmler listesi",
+    "Kitaplar listesi"
+  )
 
-    def unapply(dd: Element): Option[String] = {
-      val text = dd.text()
-      if (text matches ddPattern) {
-        val parsed = text.replaceFirst("^\\d+", "")
-          .collect { case c if c.shortValue != 160 => c }
-          .trim
-        if (parsed.nonEmpty) Some(parsed) else None
-      } else None
-    }
-  }
+  val forbiddenWords = Set(
+    "YÖNLENDİRME",
+    "REDIRECT"
+  )
 
   def parse: Iterator[(String, Array[String])] = {
     words map {
       case (word, content) =>
         val doc = Jsoup.parse(content)
-        val dds = doc.select("dd").asScala
-        (word, dds.collect {
-          case ExtractText(text) => text
-        }.filter(!_.equalsIgnoreCase(word)).distinct.toArray)
+        val lis = doc.select("li").asScala
+        (word, lis.map(_.text().trim)
+          .filter(!_.equalsIgnoreCase(word))
+          .filter(meaning => forbiddenWords.forall(!meaning.contains(_)))
+          .distinct.toArray)
     } filter { case (word, meanings) => meanings.nonEmpty }
   }
 }
+

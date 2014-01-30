@@ -21,28 +21,25 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
 import org.sozluk.common.SozlukSettings._
 
-trait Indexer {
+trait WikiquoteIndexer extends Indexer {
 
-  type Key
+  type Key = String
 
-  type Value
+  type Value = String
 
-  type KeyValue = (Key, Value)
-
-  def client: ElasticClient
-
-  def createMappings(): Unit
-
-  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition
-
-  def indexOne(key: Key, value: Value) =
+  def createMappings(): Unit =
     client.execute {
-      _indexOne(key, value)
+      create index indexNameQuotes mappings (
+        indexTypeQuote as (
+          fieldNameKey typed StringType index "no",
+          fieldNameValue typed StringType index "analyzed" analyzer "turkish"
+        )
+      ) shards 1 replicas 1
     }
 
-  def indexBulk(items: Seq[KeyValue]) =
-    client.bulk {
-      items.map(item => _indexOne(item._1, item._2)): _*
-    }
-
+  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =
+    index into s"${indexNameQuotes}/${indexTypeQuote}" fields (
+      fieldNameKey -> key,
+      fieldNameValue -> value
+    )
 }

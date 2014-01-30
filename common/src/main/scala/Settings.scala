@@ -25,11 +25,17 @@ class Settings(config: Config = ConfigFactory.load()) {
   // note that these fields are NOT lazy, because if we're going to
   // get any exceptions, we want to get them on startup.
   val sozlukConfig = config.getConfig("sozluk")
+
   val indexNameWords = sozlukConfig.getString("indexNameWords")
+  val indexNameQuotes = sozlukConfig.getString("indexNameQuotes")
+
   val indexTypeWord = sozlukConfig.getString("indexTypeWord")
+  val indexTypeQuote = sozlukConfig.getString("indexTypeQuote")
+
   val fieldNameKey = sozlukConfig.getString("fieldName.key")
   val fieldNameValue = sozlukConfig.getString("fieldName.value")
   val fieldNameAutoComplete = sozlukConfig.getString("fieldName.autoComplete")
+
   val httpPort = sozlukConfig.getInt("http.port")
 }
 

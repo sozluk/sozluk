@@ -21,28 +21,27 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
 import org.sozluk.common.SozlukSettings._
 
-trait Indexer {
+trait WiktionaryIndexer extends Indexer {
 
-  type Key
+  type Key = String
 
-  type Value
+  type Value = Array[String]
 
-  type KeyValue = (Key, Value)
-
-  def client: ElasticClient
-
-  def createMappings(): Unit
-
-  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition
-
-  def indexOne(key: Key, value: Value) =
+  def createMappings(): Unit =
     client.execute {
-      _indexOne(key, value)
+      create index indexNameWords mappings (
+        indexTypeWord as (
+          fieldNameKey typed StringType analyzer "word_analyzer",
+          fieldNameValue typed StringType index "analyzed" analyzer "turkish",
+          fieldNameAutoComplete typed CompletionType
+        )
+      ) shards 1 replicas 1
     }
 
-  def indexBulk(items: Seq[KeyValue]) =
-    client.bulk {
-      items.map(item => _indexOne(item._1, item._2)): _*
-    }
-
+  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =
+    index into s"${indexNameWords}/${indexTypeWord}" id key fields (
+      fieldNameKey -> key,
+      fieldNameValue -> value,
+      fieldNameAutoComplete -> key
+    )
 }
