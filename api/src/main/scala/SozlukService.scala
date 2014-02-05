@@ -43,7 +43,7 @@ class SozlukServiceActor extends Actor with SozlukService {
 trait SozlukService extends HttpService {
 
   import com.sksamuel.elastic4s.ElasticDsl._
-  import com.sksamuel.elastic4s.ElasticClient
+  import com.sksamuel.elastic4s.{ ElasticClient, CustomAnalyzer }
   import com.sksamuel.elastic4s.SuggestMode._
   import org.elasticsearch.node.NodeBuilder._
   import spray.http.HttpHeaders._
@@ -63,7 +63,11 @@ trait SozlukService extends HttpService {
             respondWithCORSHeaders {
               complete {
                 client execute {
-                  search in indexNameWords types indexTypeWord query matchPhrase(fieldNameKey, q)
+                  import scala.language.reflectiveCalls
+                  search in indexNameWords types indexTypeWord query matchPhrase(fieldNameKey, q) suggestions (
+                    suggest using completion as "ac" on q field fieldNameAutoComplete,
+                    suggest using term as "term" on q field fieldNameAutoComplete maxEdits 2 minWordLength 3 analyzer CustomAnalyzer("word_analyzer")
+                  )
                 } map (_.toString)
               }
             }

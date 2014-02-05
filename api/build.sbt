@@ -1,7 +1,8 @@
 name := "api"
 
 resolvers ++= Seq(
-  "spray repo" at "http://repo.spray.io/"
+  "spray repo" at "http://repo.spray.io/",
+  "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
 )
 
 libraryDependencies ++= {
@@ -11,7 +12,7 @@ libraryDependencies ++= {
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" %% "spray-json" % "1.2.5",
     "io.spray" % "spray-testkit" % sprayVersion,
-    "com.sksamuel.elastic4s" %% "elastic4s" % "0.90.10.0",
+    "com.sksamuel.elastic4s" %% "elastic4s" % "1.0.0-SNAPSHOT",
     "org.specs2" %% "specs2" % "2.2.3" % "test")
 }
 
