@@ -26,6 +26,7 @@ lazy val api = project.in(file("api"))
   .settings(testOptions in Test += Tests.Argument("showtimes", "true"))
 
 lazy val parser = project.in(file("parser"))
+  .dependsOn(common)
   .settings(settings: _*)
   .settings(test in assembly := {})
   .settings(testOptions in Test += Tests.Argument("-oDS"))
