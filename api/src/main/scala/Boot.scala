@@ -25,7 +25,7 @@ object Boot extends App {
 
   implicit val system = ActorSystem("sozluk-system")
 
-  val service = system.actorOf(Props[SozlukServiceActor], "sozluk-service")
+  val service = system.actorOf(SozlukServiceActor.props(), "sozluk-service")
 
   IO(Http) ! Http.Bind(service, interface = "0.0.0.0", port = httpPort)
 }

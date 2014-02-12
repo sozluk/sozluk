@@ -5,5 +5,7 @@ libraryDependencies ++= Seq(
   "org.xwiki.rendering" % "xwiki-rendering-syntax-mediawiki" % "5.3",
   "org.xwiki.rendering" % "xwiki-rendering-syntax-xhtml" % "5.3",
   "org.xwiki.commons" % "xwiki-commons-component-default" % "5.3",
+  "net.databinder.dispatch" %% "dispatch-core" % "0.11.0",
+  "net.databinder.dispatch" %% "dispatch-jsoup" % "0.11.0",
   "org.jsoup" % "jsoup" % "1.7.3",
   "org.scalatest" %% "scalatest" % "2.0" % "test")

@@ -17,15 +17,23 @@
 package org.sozluk.api
 
 import scala.concurrent.ExecutionContext
-import akka.actor.Actor
+import akka.actor.{ Actor, Props }
 import spray.routing._
-import spray.http._
-import MediaTypes._
+import spray.http.AllOrigins
+import spray.http.HttpHeaders._
+import spray.http.MediaTypes._
+import org.sozluk.common.Logger
 import org.sozluk.common.SozlukSettings._
+
+object SozlukServiceActor {
+  def props(): Props = Props[SozlukServiceActor]
+}
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class SozlukServiceActor extends Actor with SozlukService {
+class SozlukServiceActor extends Actor with SozlukService with ElasticComponent {
+
+  val elastic: Elastic = Elastic
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -40,18 +48,9 @@ class SozlukServiceActor extends Actor with SozlukService {
 }
 
 // this trait defines our service behavior independently from the service actor
-trait SozlukService extends HttpService {
-
-  import com.sksamuel.elastic4s.ElasticDsl._
-  import com.sksamuel.elastic4s.{ ElasticClient, CustomAnalyzer }
-  import com.sksamuel.elastic4s.SuggestMode._
-  import org.elasticsearch.node.NodeBuilder._
-  import spray.http.HttpHeaders._
+trait SozlukService extends HttpService { self: ElasticComponent =>
 
   implicit def ec: ExecutionContext
-
-  val node = nodeBuilder().node()
-  val client = ElasticClient.fromNode(node)
 
   def respondWithCORSHeaders = respondWithHeaders(`Access-Control-Allow-Origin`(AllOrigins))
 
@@ -62,13 +61,17 @@ trait SozlukService extends HttpService {
           respondWithMediaType(`application/json`) {
             respondWithCORSHeaders {
               complete {
-                client execute {
-                  import scala.language.reflectiveCalls
-                  search in indexNameWords types indexTypeWord query matchPhrase(fieldNameKey, q) suggestions (
-                    suggest using completion as "ac" on q field fieldNameAutoComplete,
-                    suggest using term as "term" on q field fieldNameAutoComplete maxEdits 2 minWordLength 3 analyzer CustomAnalyzer("word_analyzer")
-                  )
-                } map (_.toString)
+                val futureResponse = elastic.queryWords(q)
+
+                // If there are no hits then ask TDK
+                futureResponse.foreach { searchResponse =>
+                  if (searchResponse.getHits.totalHits == 0) {
+                    actorRefFactory.actorOf(TdkParserActor.props) ! q
+                  }
+                }
+
+                // Do not wait for TDK, return immediately
+                futureResponse map (_.toString)
               }
             }
           }
@@ -80,9 +83,7 @@ trait SozlukService extends HttpService {
           respondWithMediaType(`application/json`) {
             respondWithCORSHeaders {
               complete {
-                client execute {
-                  search in indexNameQuotes types indexTypeQuote query matches(fieldNameValue, q)
-                } map (_.toString)
+                elastic.queryQuotes(q) map (_.toString)
               }
             }
           }
@@ -90,8 +91,10 @@ trait SozlukService extends HttpService {
       }
     } ~ path("ping") {
       get {
-        complete {
-          "pong"
+        respondWithCORSHeaders {
+          complete {
+            "pong"
+          }
         }
       }
     }

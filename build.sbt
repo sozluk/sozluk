@@ -20,7 +20,7 @@ lazy val settings = (
   ++ assemblySettings)
 
 lazy val api = project.in(file("api"))
-  .dependsOn(common)
+  .dependsOn(common, parser)
   .settings(settings: _*)
   .settings(test in assembly := {})
   .settings(testOptions in Test += Tests.Argument("showtimes", "true"))

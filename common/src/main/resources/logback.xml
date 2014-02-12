@@ -8,14 +8,8 @@
     </encoder>
   </appender>
 
-  <appender name="STDOUT_WITH_CALLER" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%coloredLevel %message%n%xException{7}%caller{3}</pattern>
-    </encoder>
-  </appender>
-
   <logger name="org.sozluk" level="DEBUG">
-    <appender-ref ref="STDOUT_WITH_CALLER" />
+    <appender-ref ref="STDOUT" />
   </logger>
 
   <root level="INFO">

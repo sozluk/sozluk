@@ -28,13 +28,16 @@ class Settings(config: Config = ConfigFactory.load()) {
 
   val indexNameWords = sozlukConfig.getString("indexNameWords")
   val indexNameQuotes = sozlukConfig.getString("indexNameQuotes")
+  val indexNameTdks = sozlukConfig.getString("indexNameTdks")
 
   val indexTypeWord = sozlukConfig.getString("indexTypeWord")
   val indexTypeQuote = sozlukConfig.getString("indexTypeQuote")
+  val indexTypeTdk = sozlukConfig.getString("indexTypeTdk")
 
   val fieldNameKey = sozlukConfig.getString("fieldName.key")
   val fieldNameValue = sozlukConfig.getString("fieldName.value")
   val fieldNameAutoComplete = sozlukConfig.getString("fieldName.autoComplete")
+  val fieldNameSource = sozlukConfig.getString("fieldName.source")
 
   val httpPort = sozlukConfig.getInt("http.port")
 }

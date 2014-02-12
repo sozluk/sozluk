@@ -14,25 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.sozluk.parser
+package org.sozluk.api
 
-import org.scalatest._
+import org.elasticsearch.node.NodeBuilder._
+import com.sksamuel.elastic4s.ElasticClient
 
-import java.io.{ Reader, FileReader }
-
-class WiktionaryParserSpec extends FlatSpec with Matchers with WiktionaryParser {
-
-  def xmlSrc: Reader = new FileReader(getClass.getResource("/trwiktionary.xml").getPath)
-  val forbiddenWords = Set.empty[String]
-  val ignoredPages = Set.empty[String]
-
-  "A WiktionaryParser" should "parse Turkish wiktionary" in {
-    val list = parse.toList
-    list should have size 4
-    list(0)._1 shouldBe "empati"
-    list(1)._1 shouldBe "etimoloji"
-    list(2)._1 shouldBe "imece"
-    list(3)._1 shouldBe "mayıs"
-  }
-
+object Context {
+  val node = nodeBuilder().node()
+  val client = ElasticClient.fromNode(node)
 }
