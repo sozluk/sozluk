@@ -14,7 +14,7 @@ libraryDependencies ++= {
     "io.spray" % "spray-routing" % sprayVersion,
     "io.spray" %% "spray-json" % "1.2.5",
     "io.spray" % "spray-testkit" % sprayVersion,
-    "com.sksamuel.elastic4s" %% "elastic4s" % "1.0.0-SNAPSHOT",
+    "com.sksamuel.elastic4s" %% "elastic4s" % "1.0.0.0",
     "org.specs2" %% "specs2" % "2.2.3" % "test")
 }
 
