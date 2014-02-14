@@ -1,3 +1,5 @@
+import AssemblyKeys._
+
 name := "api"
 
 resolvers ++= Seq(
@@ -17,3 +19,13 @@ libraryDependencies ++= {
 }
 
 seq(Revolver.settings: _*)
+
+mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) =>
+  {
+    case "reference.conf" => MergeStrategy.concat
+    case "META-INF/MANIFEST.MF" => MergeStrategy.discard
+    case "META-INF/components.txt" => MergeStrategy.discard
+    case "META-INF/jdom-info.xml" => MergeStrategy.discard
+    case x => old(x)
+  }
+}
