@@ -61,12 +61,13 @@ trait SozlukService extends HttpService { self: ElasticComponent =>
           respondWithMediaType(`application/json`) {
             respondWithCORSHeaders {
               complete {
-                val futureResponse = elastic.queryWords(q)
+                val query = q.trim
+                val futureResponse = elastic.queryWords(query)
 
                 // If there are no hits then ask TDK
                 futureResponse.foreach { searchResponse =>
                   if (searchResponse.getHits.totalHits == 0) {
-                    actorRefFactory.actorOf(TdkParserActor.props) ! q
+                    actorRefFactory.actorOf(TdkParserActor.props) ! query
                   }
                 }
 

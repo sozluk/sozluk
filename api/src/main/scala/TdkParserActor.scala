@@ -34,7 +34,7 @@ class TdkParserActor extends Actor with ElasticComponent {
 
   def receive = LoggingReceive {
 
-    case query: String =>
+    case query: String if query matches """\S+""" =>
       // Check the query catalog for the query.
       elastic.indexTdk(query) onComplete {
         // We haven't asked for this query to TDK in the last 2 weeks.
