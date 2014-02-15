@@ -51,8 +51,10 @@ class TdkParserActor extends Actor with ElasticComponent {
               tail foreach (self ! _)
 
             // Success
-            case Right(meanings) =>
+            case Right(meanings) if meanings.nonEmpty =>
               elastic.indexWord(query, meanings.toArray, "tdk")
+
+            case _ =>
           }
 
         // We have already asked for this query in the last 2 weeks.
