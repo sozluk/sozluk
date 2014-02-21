@@ -20,8 +20,9 @@ import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
 import org.sozluk.common.SozlukSettings._
+import com.typesafe.scalalogging.slf4j.Logging
 
-trait WiktionaryIndexer extends Indexer {
+trait TbdIndexer extends Indexer with Logging {
 
   type Key = String
 
@@ -38,10 +39,13 @@ trait WiktionaryIndexer extends Indexer {
       ) shards 2 replicas 1
     }
 
-  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =
+  protected[this] def _indexOne(key: Key, value: Value): IndexDefinition = {
+    logger.info(s"Indexing $key => $value")
     index into s"${indexNameWords}/${indexTypeWord}" id key fields (
       fieldNameKey -> key,
       fieldNameValue -> value,
-      fieldNameAutoComplete -> key
-    )
+      fieldNameAutoComplete -> key,
+      fieldNameSource -> "tbd"
+    ) update false
+  }
 }

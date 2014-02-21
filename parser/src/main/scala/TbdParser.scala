@@ -20,9 +20,9 @@ import dispatch._, Defaults._
 import org.jsoup.select.Elements
 import scala.collection.JavaConversions._
 
-object TbdParser {
+trait TbdParser {
 
-  private val harfs = ('A' to 'Z') :+ '1'
+  val harfs = ('A' to 'Z') :+ '1'
 
   private def request(harf: Char) =
     url("http://www.tbd.org.tr/index.php").GET <<? Map(
@@ -42,26 +42,4 @@ object TbdParser {
 
   def parse(harf: Char): Future[Either[Throwable, List[(String, String)]]] =
     Http(request(harf) OK as.jsoup.Query("tr.sozlukSatir")).either.right.map(processResponse)
-
-  def main(args: Array[String]) {
-    val f = Future sequence {
-      harfs map { harf =>
-        parse(harf) map {
-          case Left(t) =>
-          case Right(results) => results.foreach {
-            case (word, meaning) =>
-              println(s"$word => $meaning")
-          }
-        }
-      }
-    }
-
-    import scala.concurrent.duration._
-    import scala.concurrent.Await
-    try {
-      Await.result(f, 10 seconds)
-    } finally {
-      dispatch.Http.shutdown()
-    }
-  }
 }
