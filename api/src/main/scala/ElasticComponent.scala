@@ -40,7 +40,13 @@ trait ElasticComponent {
 
     def queryQuotes(query: String): Future[SearchResponse] =
       client execute {
-        search in indexNameQuotes types indexTypeQuote query matches(fieldNameValue, query)
+        search in indexNameQuotes types indexTypeQuote query {
+          must {
+            matches(fieldNameValue, query)
+          } should {
+            matches(fieldNameRaw, query) boost 0.5
+          }
+        }
       }
 
     /** Did we make this request to TDK before? */

@@ -32,9 +32,12 @@ trait WikiquoteIndexer extends Indexer {
       create index indexNameQuotes mappings (
         indexTypeQuote as (
           fieldNameKey typed StringType index "no",
-          fieldNameValue typed StringType index "analyzed" analyzer "turkish"
+          fieldNameValue multi (
+            fieldNameValue typed StringType index "analyzed" analyzer "turkish",
+            fieldNameRaw typed StringType index "analyzed" analyzer "simple"
+          )
         )
-      ) shards 1 replicas 1
+      ) shards 2 replicas 1
     }
 
   protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =

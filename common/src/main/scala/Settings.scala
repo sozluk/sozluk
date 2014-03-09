@@ -36,6 +36,7 @@ class Settings(config: Config = ConfigFactory.load()) {
 
   val fieldNameKey = sozlukConfig.getString("fieldName.key")
   val fieldNameValue = sozlukConfig.getString("fieldName.value")
+  val fieldNameRaw = sozlukConfig.getString("fieldName.valueRaw")
   val fieldNameAutoComplete = sozlukConfig.getString("fieldName.autoComplete")
   val fieldNameSource = sozlukConfig.getString("fieldName.source")
 
