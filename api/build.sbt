@@ -7,16 +7,13 @@ resolvers ++= Seq(
   "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
 )
 
-libraryDependencies ++= {
-  val sprayVersion = "1.3.1"
-  Seq(
-    "io.spray" % "spray-can" % sprayVersion,
-    "io.spray" % "spray-routing" % sprayVersion,
-    "io.spray" %% "spray-json" % "1.2.5",
-    "io.spray" % "spray-testkit" % sprayVersion,
-    "com.sksamuel.elastic4s" %% "elastic4s" % "1.0.1.1",
-    "org.specs2" %% "specs2" % "2.2.3" % "test")
-}
+libraryDependencies ++= Seq(
+  "io.spray" % "spray-can" % Common.sprayVersion,
+  "io.spray" % "spray-routing" % Common.sprayVersion,
+  "io.spray" %% "spray-json" % "1.2.5",
+  "io.spray" % "spray-testkit" % Common.sprayVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s" % Common.elastic4sVersion,
+  "org.specs2" %% "specs2" % "2.2.3" % "test")
 
 seq(Revolver.settings: _*)
 

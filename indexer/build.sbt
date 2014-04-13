@@ -5,7 +5,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.sksamuel.elastic4s" %% "elastic4s" % "1.0.1.1",
+  "com.sksamuel.elastic4s" %% "elastic4s" % Common.elastic4sVersion,
   "org.scalatest" %% "scalatest" % "2.0" % "test")
 
 seq(Revolver.settings: _*)
