@@ -5,17 +5,15 @@ import spray.testkit.Specs2RouteTest
 import spray.http._
 import StatusCodes._
 import spray.httpx.unmarshalling._
-import com.sksamuel.elastic4s.mapping.FieldType._
+import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.StopAnalyzer
 
 class SozlukServiceSpec
     extends Specification
     with Specs2RouteTest
-    with SozlukService
-    with ElasticComponent {
+    with SozlukService {
 
-  lazy val elastic: Elastic = Elastic
   def actorRefFactory = system
   def ec = system.dispatcher
 

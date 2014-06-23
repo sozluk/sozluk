@@ -31,9 +31,7 @@ object SozlukServiceActor {
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class SozlukServiceActor extends Actor with SozlukService with ElasticComponent {
-
-  val elastic: Elastic = Elastic
+class SozlukServiceActor extends Actor with SozlukService {
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -48,7 +46,7 @@ class SozlukServiceActor extends Actor with SozlukService with ElasticComponent 
 }
 
 // this trait defines our service behavior independently from the service actor
-trait SozlukService extends HttpService { self: ElasticComponent =>
+trait SozlukService extends HttpService {
 
   implicit def ec: ExecutionContext
 
@@ -62,7 +60,7 @@ trait SozlukService extends HttpService { self: ElasticComponent =>
             respondWithCORSHeaders {
               complete {
                 val query = q.trim
-                val futureResponse = elastic.queryWords(query)
+                val futureResponse = Elastic.queryWords(query)
 
                 // If there are no hits then ask TDK
                 futureResponse.foreach { searchResponse =>
@@ -84,7 +82,7 @@ trait SozlukService extends HttpService { self: ElasticComponent =>
           respondWithMediaType(`application/json`) {
             respondWithCORSHeaders {
               complete {
-                elastic.queryQuotes(q) map (_.toString)
+                Elastic.queryQuotes(q) map (_.toString)
               }
             }
           }

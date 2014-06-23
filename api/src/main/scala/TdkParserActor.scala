@@ -26,9 +26,7 @@ object TdkParserActor {
   def props(): Props = Props[TdkParserActor]
 }
 
-class TdkParserActor extends Actor with ElasticComponent {
-
-  val elastic: Elastic = Elastic
+class TdkParserActor extends Actor {
 
   import context.dispatcher
 
@@ -36,7 +34,7 @@ class TdkParserActor extends Actor with ElasticComponent {
 
     case query: String if query matches """\S+""" =>
       // Check the query catalog for the query.
-      elastic.indexTdk(query) onComplete {
+      Elastic.indexTdk(query) onComplete {
         // We haven't asked for this query to TDK in the last 2 weeks.
         case Success(_) =>
           Logger.debug(s"Not exists $query")
@@ -52,7 +50,7 @@ class TdkParserActor extends Actor with ElasticComponent {
 
             // Success
             case Right(meanings) if meanings.nonEmpty =>
-              elastic.indexWord(query, meanings.toArray, "tdk")
+              Elastic.indexWord(query, meanings.toArray, "tdk")
 
             case _ =>
           }

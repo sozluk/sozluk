@@ -3,7 +3,7 @@ import AssemblyKeys._
 lazy val commonSettings = Seq(
   organization := "org.sozluk",
   version := "1.0-SNAPSHOT",
-  scalaVersion  := "2.10.3",
+  scalaVersion  := "2.10.4",
   scalacOptions := Seq(
     "-unchecked",
     "-deprecation",

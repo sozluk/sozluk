@@ -18,7 +18,7 @@ package org.sozluk.indexer
 
 import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mapping.FieldType.{ StringType, CompletionType }
+import com.sksamuel.elastic4s.mappings.FieldType.{ StringType, CompletionType }
 import org.sozluk.common.SozlukSettings._
 
 trait WikiquoteIndexer extends Indexer {
