@@ -16,14 +16,15 @@
 
 package org.sozluk.indexer
 
-import org.sozluk.parser.TbdParser
 import com.sksamuel.elastic4s.ElasticClient
-import scala.concurrent.{ Future, Await }
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
+import org.sozluk.parser.TbdParser
 
-object TbdIndexerApp extends TbdIndexer with TbdParser with Logging {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+
+object TbdIndexerApp extends TbdIndexer with TbdParser with LazyLogging {
 
   val client = ElasticClient.remote("localhost", 9300)
 
@@ -38,7 +39,7 @@ object TbdIndexerApp extends TbdIndexer with TbdParser with Logging {
         parse(harf) flatMap {
           case Left(t) =>
             logger.error("Error from TBD", t)
-            Future.successful()
+            Future.successful(())
           case Right(results) =>
             Future sequence {
               results map {

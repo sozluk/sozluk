@@ -16,9 +16,9 @@
 
 package org.sozluk.indexer
 
-import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mappings.FieldType.{ StringType, CompletionType }
+import com.sksamuel.elastic4s.IndexDefinition
+import com.sksamuel.elastic4s.mappings.FieldType.StringType
 import org.sozluk.common.SozlukSettings._
 
 trait WikiquoteIndexer extends Indexer {
@@ -30,19 +30,19 @@ trait WikiquoteIndexer extends Indexer {
   def createMappings(): Unit =
     client.execute {
       create index indexNameQuotes mappings (
-        indexTypeQuote as (
+        indexTypeQuote as(
           fieldNameKey typed StringType index "no",
-          fieldNameValue multi (
+          fieldNameValue multi(
             fieldNameValue typed StringType index "analyzed" analyzer "turkish",
             fieldNameRaw typed StringType index "analyzed" analyzer "simple"
+            )
           )
-        )
-      ) shards 2 replicas 1
+        ) shards 2 replicas 1
     }
 
   protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =
-    index into s"${indexNameQuotes}/${indexTypeQuote}" fields (
+    index into s"${indexNameQuotes}/${indexTypeQuote}" fields(
       fieldNameKey -> key,
       fieldNameValue -> value
-    )
+      )
 }

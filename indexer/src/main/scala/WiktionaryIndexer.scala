@@ -16,9 +16,9 @@
 
 package org.sozluk.indexer
 
-import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mappings.FieldType.{ StringType, CompletionType }
+import com.sksamuel.elastic4s.IndexDefinition
+import com.sksamuel.elastic4s.mappings.FieldType.{CompletionType, StringType}
 import org.sozluk.common.SozlukSettings._
 
 trait WiktionaryIndexer extends Indexer {
@@ -30,18 +30,18 @@ trait WiktionaryIndexer extends Indexer {
   def createMappings(): Unit =
     client.execute {
       create index indexNameWords mappings (
-        indexTypeWord as (
+        indexTypeWord as(
           fieldNameKey typed StringType analyzer "word_analyzer",
           fieldNameValue typed StringType index "analyzed" analyzer "turkish",
           fieldNameAutoComplete typed CompletionType
-        )
-      ) shards 2 replicas 1
+          )
+        ) shards 2 replicas 1
     }
 
   protected[this] def _indexOne(key: Key, value: Value): IndexDefinition =
-    index into s"${indexNameWords}/${indexTypeWord}" id key fields (
+    index into s"${indexNameWords}/${indexTypeWord}" id key fields(
       fieldNameKey -> key,
       fieldNameValue -> value,
       fieldNameAutoComplete -> key
-    )
+      )
 }

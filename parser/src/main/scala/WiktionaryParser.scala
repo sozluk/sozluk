@@ -38,7 +38,7 @@ trait WiktionaryParser extends WikiParser {
       val text = dd.text()
       if (text matches ddPattern) {
         val parsed = text.replaceFirst("^\\d+", "")
-          .collect { case c if c.shortValue != 160 => c }
+          .collect { case c if c.toShort != 160 => c }
           .trim
         if (parsed.nonEmpty) Some(parsed) else None
       } else None

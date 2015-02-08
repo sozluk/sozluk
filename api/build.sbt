@@ -8,12 +8,13 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.spray" % "spray-can" % Common.sprayVersion,
-  "io.spray" % "spray-routing" % Common.sprayVersion,
-  "io.spray" %% "spray-json" % "1.2.5",
-  "io.spray" % "spray-testkit" % Common.sprayVersion,
+  "com.typesafe.akka" %% "akka-actor" % "2.3.9",      
+  "io.spray" %% "spray-can" % Common.sprayVersion,
+  "io.spray" %% "spray-routing" % Common.sprayVersion,
+  "io.spray" %% "spray-json" % "1.3.1",
+  "io.spray" %% "spray-testkit" % Common.sprayVersion % "test",
   "com.sksamuel.elastic4s" %% "elastic4s" % Common.elastic4sVersion,
-  "org.specs2" %% "specs2" % "2.2.3" % "test")
+  "org.specs2" %% "specs2-core" % "2.4.15" % "test")
 
 seq(Revolver.settings: _*)
 

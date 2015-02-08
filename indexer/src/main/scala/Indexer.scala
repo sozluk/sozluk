@@ -16,10 +16,8 @@
 
 package org.sozluk.indexer
 
-import com.sksamuel.elastic4s.ElasticClient
 import com.sksamuel.elastic4s.ElasticDsl._
-import com.sksamuel.elastic4s.mappings.FieldType.{ StringType, CompletionType }
-import org.sozluk.common.SozlukSettings._
+import com.sksamuel.elastic4s.{ElasticClient, IndexDefinition}
 
 trait Indexer {
 
@@ -41,8 +39,10 @@ trait Indexer {
     }
 
   def indexBulk(items: Seq[KeyValue]) =
-    client.bulk {
-      items.map(item => _indexOne(item._1, item._2)): _*
+    client.execute {
+      bulk(
+        items.map(item => _indexOne(item._1, item._2)): _*
+      )
     }
 
 }

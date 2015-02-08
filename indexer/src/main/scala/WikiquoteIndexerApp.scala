@@ -16,14 +16,16 @@
 
 package org.sozluk.indexer
 
-import org.sozluk.parser.WikiquoteParser
+import java.io.{FileReader, Reader}
+
 import com.sksamuel.elastic4s.ElasticClient
-import java.io.{ Reader, FileReader }
+import com.typesafe.scalalogging.LazyLogging
+import org.sozluk.parser.WikiquoteParser
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.typesafe.scalalogging.slf4j.Logging
 
-object WikiquoteIndexerApp extends WikiquoteIndexer with Logging {
+object WikiquoteIndexerApp extends WikiquoteIndexer with LazyLogging {
 
   val client = ElasticClient.remote("localhost", 9300)
 

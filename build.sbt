@@ -3,7 +3,7 @@ import AssemblyKeys._
 lazy val commonSettings = Seq(
   organization := "org.sozluk",
   version := "1.0-SNAPSHOT",
-  scalaVersion  := "2.10.4",
+  scalaVersion  := "2.11.5",
   scalacOptions := Seq(
     "-unchecked",
     "-deprecation",
@@ -15,7 +15,6 @@ lazy val commonSettings = Seq(
 
 lazy val settings = (
   commonSettings
-  ++ scalariformSettings
   ++ org.scalastyle.sbt.ScalastylePlugin.Settings
   ++ assemblySettings)
 

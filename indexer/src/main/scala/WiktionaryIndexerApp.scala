@@ -16,14 +16,16 @@
 
 package org.sozluk.indexer
 
-import org.sozluk.parser.WiktionaryParser
+import java.io.{FileReader, Reader}
+
 import com.sksamuel.elastic4s.ElasticClient
-import java.io.{ Reader, FileReader }
+import com.typesafe.scalalogging.LazyLogging
+import org.sozluk.parser.WiktionaryParser
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import com.typesafe.scalalogging.slf4j.Logging
 
-object WiktionaryIndexerApp extends WiktionaryIndexer with Logging {
+object WiktionaryIndexerApp extends WiktionaryIndexer with LazyLogging {
 
   val client = ElasticClient.remote("localhost", 9300)
 
@@ -36,6 +38,7 @@ object WiktionaryIndexerApp extends WiktionaryIndexer with Logging {
     new WiktionaryParser {
       val ignoredPages = Set.empty[String]
       val forbiddenWords = Set.empty[String]
+
       def xmlSrc: Reader = new FileReader(args(0))
     }.parse grouped 100 foreach { items =>
       logger.info("indexing...")

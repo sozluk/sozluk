@@ -11,6 +11,6 @@ object Common {
     }.getOrElse("> ")
   }
 
-  val elastic4sVersion = "1.2.1.1"
+  val elastic4sVersion = "1.4.11"
   val sprayVersion = "1.3.1"
 }
